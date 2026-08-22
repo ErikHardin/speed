@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPEED — Solo Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #120b1e;
+    --felt-1: #0aa87a;
+    --felt-2: #066b52;
+    --line: rgba(255,255,255,0.09);
+    --amber: #ff7a45;
+    --amber-dim: #cc4f1f;
+    --cyan: #29e5ff;
+    --text: #fffdf8;
+    --text-dim: #a7b8c4;
+    --card-face: #fffdf6;
+    --card-ink-black: #241b3d;
+    --card-ink-red: #ff3b5c;
+    --card-back-a: #2a1454;
+    --card-back-b: #5a2ea8;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% -10%, #241a3d 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+  }
+
+  /* ---------- SETUP SCREEN ---------- */
+  #setup{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    padding:40px 24px;
+    text-align:center;
+  }
+  .brand{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    letter-spacing:0.12em;
+    font-size:clamp(42px,10vw,64px);
+    color:var(--text);
+    text-transform:uppercase;
+    line-height:0.95;
+  }
+  .brand span{color:var(--amber);}
+  .tagline{
+    color:var(--text-dim);
+    font-size:14px;
+    letter-spacing:0.06em;
+    margin-top:6px;
+    margin-bottom:36px;
+    text-transform:uppercase;
+  }
+  .setup-card{
+    background:linear-gradient(160deg, #1d1533, #140c22);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:28px 24px;
+    text-align:left;
+  }
+  .field{margin-bottom:20px;}
+  .field label{
+    display:block;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:8px;
+  }
+  .seg{
+    display:flex;
+    background:#180f28;
+    border-radius:8px;
+    padding:4px;
+    gap:4px;
+  }
+  .seg button{
+    flex:1;
+    padding:10px 6px;
+    border:none;
+    background:transparent;
+    color:var(--text-dim);
+    font-family:'Oswald',sans-serif;
+    font-size:13px;
+    letter-spacing:0.04em;
+    border-radius:6px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .seg button.active{
+    background:var(--amber);
+    color:#1a1006;
+    font-weight:600;
+  }
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#180f28;
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .toggle-row .lbl{font-size:13px;color:var(--text);}
+  .toggle-row .sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .switch{
+    width:42px;height:24px;background:#33254a;border-radius:20px;position:relative;cursor:pointer;flex:none;margin-left:12px;transition:background .15s;
+  }
+  .switch.on{background:var(--amber);}
+  .switch::after{
+    content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fffdf8;transition:transform .15s;
+  }
+  .switch.on::after{transform:translateX(18px);}
+  .start-btn{
+    width:100%;
+    margin-top:8px;
+    padding:15px;
+    border:none;
+    border-radius:9px;
+    background:var(--amber);
+    color:#1a1006;
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:transform .1s, box-shadow .15s;
+    box-shadow:0 6px 0 var(--amber-dim);
+  }
+  .start-btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--amber-dim);}
+  .rules-note{
+    margin-top:18px;
+    font-size:12px;
+    line-height:1.6;
+    color:var(--text-dim);
+  }
+
+  /* ---------- GAME SCREEN ---------- */
+  #game{
+    display:none;
+    width:100%;
+    max-width:860px;
+    padding:14px 14px 24px;
+    flex-direction:column;
+    gap:10px;
+  }
+  header.bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 4px 4px;
+  }
+  .title-mini{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-size:15px;
+    color:var(--text-dim);
+  }
+  .title-mini span{color:var(--amber);}
+  .wrap-badge{
+    font-size:10px;
+    color:var(--cyan) !important;
+    border:1px solid var(--cyan);
+    border-radius:20px;
+    padding:2px 8px;
+    margin-left:6px;
+    letter-spacing:0.06em;
+    vertical-align:1px;
+  }
+  .wrap-badge.off{
+    color:var(--text-dim) !important;
+    border-color:var(--line);
+  }
+  .hud{
+    display:flex;
+    align-items:center;
+    gap:18px;
+  }
+  .stopwatch{
+    font-family:'JetBrains Mono',monospace;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:0.02em;
+    color:var(--text);
+    background:#180f28;
+    padding:6px 12px;
+    border-radius:7px;
+    border:1px solid var(--line);
+  }
+  .gauge-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+  }
+  .gauge{
+    width:56px;height:56px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    background:conic-gradient(var(--cyan) calc(var(--pct,0)*1%), #1c2521 0);
+    transition:background .3s ease;
+  }
+  .gauge::before{
+    content:'';
+    position:absolute;
+    width:42px;height:42px;
+    border-radius:50%;
+    background:#180f28;
+  }
+  .gauge span{
+    position:relative;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    font-weight:700;
+  }
+  .gauge-label{font-size:9px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;}
+  .icon-btn{
+    background:#180f28;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    border-radius:7px;
+    padding:7px 10px;
+    font-size:12px;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .icon-btn:hover{color:var(--text);border-color:var(--cyan);}
+
+  .table{
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--felt-1), var(--felt-2) 75%);
+    border-radius:16px;
+    border:1px solid rgba(0,0,0,0.4);
+    box-shadow:inset 0 2px 24px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.35);
+    padding:18px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .table::before{
+    content:'';
+    position:absolute;inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+
+  .zone{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    position:relative;
+    z-index:1;
+  }
+  .side-label{
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--text-dim);}
+  .dot.bot{background:var(--cyan);}
+  .dot.you{background:var(--amber);}
+
+  .stockpile{
+    position:relative;
+    width:52px;height:74px;
+    flex:none;
+  }
+  .count-badge{
+    position:absolute;
+    bottom:-9px;left:50%;
+    transform:translateX(-50%);
+    background:#180f28;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:1px 7px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--text-dim);
+  }
+
+  .card{
+    width:52px;height:74px;
+    border-radius:6px;
+    position:relative;
+    flex:none;
+    user-select:none;
+    box-shadow:0 2px 5px rgba(0,0,0,0.4);
+  }
+  .card.face{
+    background:var(--card-face);
+    border:1px solid rgba(0,0,0,0.15);
+  }
+  .card.back{
+    background:
+      repeating-linear-gradient(45deg, var(--card-back-a) 0 6px, var(--card-back-b) 6px 12px);
+    border:1px solid rgba(0,0,0,0.3);
+  }
+  .card.back::after{
+    content:'S';
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:20px;
+    color:rgba(255,122,69,0.75);
+  }
+  .card .corner{
+    position:absolute;
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:12px;
+    line-height:1;
+    text-align:center;
+  }
+  .card .corner.tl{top:4px;left:5px;}
+  .card .corner.br{bottom:4px;right:5px;transform:rotate(180deg);}
+  .card .pip{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+  }
+  .card.red{color:var(--card-ink-red);}
+  .card.black{color:var(--card-ink-black);}
+
+  .stack-under{
+    position:absolute;inset:0;
+    border-radius:6px;
+    background:inherit;
+  }
+
+  .center-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:26px;
+    padding:8px 0;
+    position:relative;
+    z-index:1;
+  }
+  .stuck-banner{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(0.8);
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(16px,4.5vw,24px);
+    letter-spacing:0.12em;
+    color:var(--amber);
+    text-shadow:0 0 20px rgba(255,107,53,0.8), 0 0 3px var(--bg);
+    opacity:0;
+    pointer-events:none;
+    z-index:6;
+    white-space:nowrap;
+    background:rgba(10,13,10,0.7);
+    padding:6px 18px;
+    border-radius:8px;
+    border:1px solid rgba(255,107,53,0.4);
+  }
+  .stuck-banner.show{
+    animation:stuckpop .9s ease forwards;
+  }
+  .center-pile{
+    width:60px;height:82px;
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .center-pile .placeholder{
+    width:56px;height:78px;
+    border:2px dashed rgba(255,255,255,0.12);
+    border-radius:8px;
+  }
+  .center-pile.valid-target .card.face{
+    box-shadow:0 0 0 3px var(--cyan), 0 4px 12px rgba(76,201,240,0.4);
+    cursor:pointer;
+  }
+  .center-pile.valid-target .placeholder{
+    border-color:var(--cyan);
+  }
+
+  .stuck-flash{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(0.8);
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:clamp(18px,5vw,26px);
+    letter-spacing:0.1em;
+    color:var(--amber);
+    text-shadow:0 0 20px rgba(255,107,53,0.8), 0 0 3px var(--bg);
+    opacity:0;
+    pointer-events:none;
+    z-index:5;
+    white-space:nowrap;
+    background:rgba(10,13,10,0.55);
+    padding:4px 14px;
+    border-radius:8px;
+  }
+  .stuck-flash.show{
+    animation:stuckpop .9s ease forwards;
+  }
+  @keyframes stuckpop{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}
+    20%{opacity:1;transform:translate(-50%,-50%) scale(1.08);}
+    70%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(1);}
+  }
+
+  .hand-row{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    min-height:84px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    padding:4px 0;
+  }
+  .hand-row.bot .card{opacity:0.96;}
+  .hand-row.you .card{cursor:pointer;transition:transform .12s ease, box-shadow .12s ease;}
+  .hand-row.you .card:hover{transform:translateY(-6px);}
+  .hand-row.you .card.selected{
+    transform:translateY(-12px);
+    box-shadow:0 0 0 3px var(--amber), 0 8px 16px rgba(255,107,53,0.35);
+  }
+  .hand-row.you .card.dead{
+    animation:shake .35s ease;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-4px);}
+    75%{transform:translateX(4px);}
+  }
+  .hand-row.you .card.playing{
+    animation:playout .28s ease forwards;
+  }
+  @keyframes playout{
+    to{transform:translateY(-40px) scale(0.9);opacity:0;}
+  }
+
+  .legend{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-dim);
+    padding-top:2px;
+  }
+  .legend b{color:var(--text);}
+
+  /* ---------- COUNTDOWN ---------- */
+  #countdown{
+    position:fixed;inset:0;
+    background:rgba(10,13,10,0.88);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:50;
+    flex-direction:column;
+  }
+  #countdown .num{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:120px;
+    color:var(--amber);
+    text-shadow:0 0 40px rgba(255,107,53,0.6);
+  }
+  #countdown .go{
+    color:var(--cyan);
+    text-shadow:0 0 40px rgba(76,201,240,0.7);
+  }
+  .pulse{animation:pulse .5s ease;}
+  @keyframes pulse{
+    0%{transform:scale(0.5);opacity:0;}
+    50%{transform:scale(1.15);opacity:1;}
+    100%{transform:scale(1);opacity:1;}
+  }
+
+  /* ---------- END MODAL ---------- */
+  #endmodal{
+    position:fixed;inset:0;
+    background:rgba(8,10,8,0.82);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:60;
+    padding:20px;
+  }
+  .modal-box{
+    background:linear-gradient(160deg,#1d1533,#140c22);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:30px 28px;
+    text-align:center;
+    max-width:360px;
+    width:100%;
+  }
+  .modal-box .result{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:30px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .modal-box .result.win{color:var(--amber);}
+  .modal-box .result.lose{color:var(--cyan);}
+  .modal-box .stats{
+    display:flex;
+    justify-content:center;
+    gap:26px;
+    margin:18px 0;
+  }
+  .modal-box .stat .val{
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px;
+    font-weight:700;
+  }
+  .modal-box .stat .lbl{
+    font-size:10px;
+    letter-spacing:0.08em;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    margin-top:2px;
+  }
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .modal-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    letter-spacing:0.04em;
+    cursor:pointer;
+  }
+  .modal-actions .again{background:var(--amber);color:#1a1006;}
+  .modal-actions .menu{background:#22302a;color:var(--text);}
+
+  @media (max-width:480px){
+    .card{width:42px;height:60px;}
+    .card .pip{font-size:17px;}
+    .card .corner{font-size:10px;}
+    .center-pile{width:48px;height:68px;}
+    .center-pile .placeholder{width:44px;height:62px;}
+    .stopwatch{font-size:16px;padding:5px 9px;}
+    .gauge{width:46px;height:46px;}
+    .gauge::before{width:34px;height:34px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="brand">SPEED<span>.</span></div>
+  <div class="tagline">Solo practice mode — warm up before facing a real opponent</div>
+  <div class="setup-card">
+    <div class="field">
+      <label>Bot reaction speed</label>
+      <div class="seg" id="diffSeg">
+        <button data-v="slow">Slow</button>
+        <button data-v="medium" class="active">Medium</button>
+        <button data-v="fast">Fast</button>
+        <button data-v="insane">Insane</button>
+      </div>
+    </div>
+    <div class="field">
+      <div class="toggle-row" id="wrapToggle">
+        <div>
+          <div class="lbl">Ace wraps (K–A–2)</div>
+          <div class="sub">Ace counts as adjacent to both King and 2</div>
+        </div>
+        <div class="switch" id="wrapSwitch"></div>
+      </div>
+    </div>
+    <button class="start-btn" id="startBtn">Start Round</button>
+    <div class="rules-note">
+      Play a card from your hand onto a center pile if it's one rank higher or lower. Your hand refills automatically from your stock. If nobody can move, both piles flip a fresh card. First to clear your hand and stock wins.
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game">
+  <header class="bar">
+    <div class="title-mini">SPEED <span>·</span> PRACTICE <span id="wrapBadge" class="wrap-badge"></span></div>
+    <div class="hud">
+      <div class="stopwatch" id="stopwatch">00:00</div>
+      <div class="gauge-wrap">
+        <div class="gauge" id="gauge"><span id="apmVal">0</span></div>
+        <div class="gauge-label">APM</div>
+      </div>
+      <button class="icon-btn" id="restartBtn">Restart</button>
+      <button class="icon-btn" id="menuBtn">Menu</button>
+    </div>
+  </header>
+
+  <div class="table">
+    <div class="zone">
+      <div class="side-label"><span class="dot bot"></span>BOT</div>
+    </div>
+    <div class="hand-row bot" id="botHand"></div>
+
+    <div class="center-row">
+      <div class="stockpile" id="botStock"></div>
+      <div class="center-pile" id="centerA"></div>
+      <div class="center-pile" id="centerB"></div>
+      <div class="stockpile" id="youStock"></div>
+      <div class="stuck-banner" id="stuckBanner">NOBODY CAN MOVE — FLIPPING</div>
+    </div>
+
+    <div class="hand-row you" id="youHand"></div>
+    <div class="zone">
+      <div class="side-label"><span class="dot you"></span>YOU</div>
+    </div>
+  </div>
+
+  <div class="legend">Tap a card in <b>your</b> row, then tap a glowing center pile to play it.</div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countdown">
+  <div class="num" id="cdNum">3</div>
+</div>
+
+<!-- END MODAL -->
+<div id="endmodal">
+  <div class="modal-box">
+    <div class="result" id="resultText">SPEED!</div>
+    <div style="color:var(--text-dim);font-size:13px;" id="resultSub">You cleared your hand and stock first.</div>
+    <div class="stats">
+      <div class="stat"><div class="val" id="statTime">00:00</div><div class="lbl">Time</div></div>
+      <div class="stat"><div class="val" id="statApm">0</div><div class="lbl">Avg APM</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="again" id="playAgainBtn">Play Again</button>
+      <button class="menu" id="backMenuBtn">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const RANK_LABEL = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const SUITS = [
+    {sym:'♠', color:'black'}, {sym:'♥', color:'red'},
+    {sym:'♦', color:'red'}, {sym:'♣', color:'black'}
+  ];
+  const DIFFICULTY = {
+    slow:   [900, 1700],
+    medium: [500, 1000],
+    fast:   [260, 560],
+    insane: [80, 220]
+  };
+
+  let settings = { difficulty:'medium', wrap:false };
+
+  // ---- audio ----
+  let actx = null;
+  function beep(freq, dur, type, gain){
+    try{
+      if(!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = actx.createOscillator();
+      const g = actx.createGain();
+      o.type = type||'square';
+      o.frequency.value = freq;
+      g.gain.value = gain||0.05;
+      o.connect(g); g.connect(actx.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + dur);
+      o.stop(actx.currentTime + dur);
+    }catch(e){}
+  }
+  function sfxPlay(){ beep(520,0.08,'square',0.04); }
+  function sfxBotPlay(){ beep(340,0.08,'square',0.03); }
+  function sfxStuck(){ beep(180,0.25,'sawtooth',0.05); }
+  function sfxWin(){ [660,880,1100].forEach((f,i)=>setTimeout(()=>beep(f,0.25,'triangle',0.06), i*120)); }
+  function sfxLose(){ [400,300,220].forEach((f,i)=>setTimeout(()=>beep(f,0.3,'sawtooth',0.05), i*130)); }
+
+  // ---- deck ----
+  function buildDeck(){
+    const deck = [];
+    let id = 0;
+    for(const suit of SUITS){
+      for(let r=1;r<=13;r++){
+        deck.push({id:id++, rank:r, suit:suit.sym, color:suit.color});
+      }
+    }
+    return deck;
+  }
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function isAdjacent(a,b){
+    const d = Math.abs(a-b);
+    if(d===1) return true;
+    if(settings.wrap && d===12) return true;
+    return false;
+  }
+
+  // ---- state ----
+  let S = null;
+  function newGameState(){
+    const deck = shuffle(buildDeck());
+    const youHand = deck.splice(0,5);
+    const botHand = deck.splice(0,5);
+    const split = Math.floor(deck.length/2);
+    const youStock = deck.splice(0,split);
+    const botStock = deck.splice(0,deck.length);
+    const centerA = [ youStock.shift() ];
+    const centerB = [ botStock.shift() ];
+    return {
+      youHand, botHand, youStock, botStock, centers:[centerA, centerB],
+      selected:-1,
+      botBusy:false,
+      stuckSince:null,
+      startTime:null,
+      elapsed:0,
+      youMoves:0,
+      active:false,
+      paused:false
+    };
+  }
+
+  // ---- DOM refs ----
+  const el = {
+    setup: document.getElementById('setup'),
+    game: document.getElementById('game'),
+    countdown: document.getElementById('countdown'),
+    cdNum: document.getElementById('cdNum'),
+    stopwatch: document.getElementById('stopwatch'),
+    gauge: document.getElementById('gauge'),
+    apmVal: document.getElementById('apmVal'),
+    botHand: document.getElementById('botHand'),
+    youHand: document.getElementById('youHand'),
+    botStock: document.getElementById('botStock'),
+    youStock: document.getElementById('youStock'),
+    centerA: document.getElementById('centerA'),
+    centerB: document.getElementById('centerB'),
+    stuckBanner: document.getElementById('stuckBanner'),
+    wrapBadge: document.getElementById('wrapBadge'),
+    endmodal: document.getElementById('endmodal'),
+    resultText: document.getElementById('resultText'),
+    resultSub: document.getElementById('resultSub'),
+    statTime: document.getElementById('statTime'),
+    statApm: document.getElementById('statApm'),
+  };
+
+  function cardHTML(card, corner){
+    const label = RANK_LABEL[card.rank-1];
+    return `
+      <div class="corner tl">${label}<br>${card.suit}</div>
+      <div class="pip">${card.suit}</div>
+      <div class="corner br">${label}<br>${card.suit}</div>
+    `;
+  }
+
+  function makeFaceCard(card){
+    const d = document.createElement('div');
+    d.className = 'card face ' + card.color;
+    d.innerHTML = cardHTML(card);
+    return d;
+  }
+  function makeBackCard(){
+    const d = document.createElement('div');
+    d.className = 'card back';
+    return d;
+  }
+
+  function fmtTime(sec){
+    const m = Math.floor(sec/60).toString().padStart(2,'0');
+    const s = Math.floor(sec%60).toString().padStart(2,'0');
+    return m+':'+s;
+  }
+
+  function playableCenters(rank){
+    const res = [];
+    S.centers.forEach((pile, idx)=>{
+      const top = pile[pile.length-1];
+      if(top && isAdjacent(rank, top.rank)) res.push(idx);
+    });
+    return res;
+  }
+  function handHasAnyMove(hand){
+    return hand.some(c => playableCenters(c.rank).length>0);
+  }
+
+  function render(){
+    // stocks
+    el.botStock.innerHTML = `${S.botStock.length? makeBackCard().outerHTML : ''}<div class="count-badge">${S.botStock.length}</div>`;
+    el.youStock.innerHTML = `${S.youStock.length? makeBackCard().outerHTML : ''}<div class="count-badge">${S.youStock.length}</div>`;
+
+    // centers
+    [el.centerA, el.centerB].forEach((elc, idx)=>{
+      const pile = S.centers[idx];
+      const top = pile[pile.length-1];
+      elc.innerHTML = '';
+      if(top){
+        const c = makeFaceCard(top);
+        elc.appendChild(c);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'placeholder';
+        elc.appendChild(ph);
+      }
+      let valid = false;
+      if(S.selected>=0){
+        const card = S.youHand[S.selected];
+        if(card && isAdjacent(card.rank, top ? top.rank : -99)) valid = true;
+      }
+      elc.classList.toggle('valid-target', valid);
+    });
+
+    // bot hand (face down)
+    el.botHand.innerHTML = '';
+    S.botHand.forEach(()=> el.botHand.appendChild(makeBackCard()));
+
+    // your hand
+    el.youHand.innerHTML = '';
+    S.youHand.forEach((card, i)=>{
+      const c = makeFaceCard(card);
+      c.dataset.idx = i;
+      if(i===S.selected) c.classList.add('selected');
+      c.addEventListener('click', ()=> onHandClick(i));
+      el.youHand.appendChild(c);
+    });
+
+    el.stopwatch.textContent = fmtTime(S.elapsed);
+    const apm = S.elapsed>2 ? Math.round(S.youMoves / (S.elapsed/60)) : 0;
+    const pct = Math.max(0, Math.min(100, Math.round((apm/90)*100)));
+    el.gauge.style.setProperty('--pct', pct);
+    el.apmVal.textContent = apm;
+  }
+
+  function renderHUD(){
+    el.stopwatch.textContent = fmtTime(S.elapsed);
+    const apm = S.elapsed>2 ? Math.round(S.youMoves / (S.elapsed/60)) : 0;
+    const pct = Math.max(0, Math.min(100, Math.round((apm/90)*100)));
+    el.gauge.style.setProperty('--pct', pct);
+    el.apmVal.textContent = apm;
+  }
+
+  function onHandClick(i){
+    if(!S.active || S.paused) return;
+    const card = S.youHand[i];
+    if(!card) return;
+    const targets = playableCenters(card.rank);
+    if(targets.length===0){
+      // shake, no valid move
+      const nodes = el.youHand.children;
+      if(nodes[i]){
+        nodes[i].classList.remove('dead'); void nodes[i].offsetWidth;
+        nodes[i].classList.add('dead');
+      }
+      S.selected = -1;
+      render();
+      return;
+    }
+    if(S.selected === i){
+      S.selected = -1;
+      render();
+      return;
+    }
+    if(targets.length===1){
+      playYouCard(i, targets[0]);
+      return;
+    }
+    S.selected = i;
+    render();
+  }
+
+  el.centerA.addEventListener('click', ()=> onCenterClick(0));
+  el.centerB.addEventListener('click', ()=> onCenterClick(1));
+
+  function onCenterClick(idx){
+    if(!S.active || S.paused || S.selected<0) return;
+    const card = S.youHand[S.selected];
+    const top = S.centers[idx][S.centers[idx].length-1];
+    if(card && isAdjacent(card.rank, top ? top.rank : -99)){
+      playYouCard(S.selected, idx);
+    }
+  }
+
+  function playYouCard(handIdx, centerIdx){
+    const [card] = S.youHand.splice(handIdx,1);
+    S.centers[centerIdx].push(card);
+    S.selected = -1;
+    S.youMoves++;
+    sfxPlay();
+    refill('you');
+    S.stuckSince = null;
+    render();
+    checkWin();
+  }
+
+  function refill(who){
+    if(who==='you'){
+      while(S.youHand.length<5 && S.youStock.length>0){
+        S.youHand.push(S.youStock.shift());
+      }
+    } else {
+      while(S.botHand.length<5 && S.botStock.length>0){
+        S.botHand.push(S.botStock.shift());
+      }
+    }
+  }
+
+  function botTryMove(){
+    if(!S.active || S.paused || S.botBusy) return;
+    const moves = [];
+    S.botHand.forEach((c, i)=>{
+      const targets = playableCenters(c.rank);
+      targets.forEach(t => moves.push({i, t}));
+    });
+    if(moves.length===0) return;
+    S.botBusy = true;
+    const [lo,hi] = DIFFICULTY[settings.difficulty];
+    const delay = lo + Math.random()*(hi-lo);
+    setTimeout(()=>{
+      S.botBusy = false;
+      if(!S.active || S.paused) return;
+      // re-validate at execution time
+      const stillValid = moves.filter(m => {
+        const c = S.botHand[m.i];
+        if(!c) return false;
+        const top = S.centers[m.t][S.centers[m.t].length-1];
+        return top && isAdjacent(c.rank, top.rank);
+      });
+      if(stillValid.length===0) return; // will retry next tick
+      const pick = stillValid[Math.floor(Math.random()*stillValid.length)];
+      const [card] = S.botHand.splice(pick.i,1);
+      S.centers[pick.t].push(card);
+      sfxBotPlay();
+      refill('bot');
+      S.stuckSince = null;
+      render();
+      checkWin();
+    }, delay);
+  }
+
+  function checkStuck(){
+    if(!S.active || S.paused) return;
+    const youMove = handHasAnyMove(S.youHand);
+    const botMove = handHasAnyMove(S.botHand);
+    if(youMove || botMove){
+      S.stuckSince = null;
+      return;
+    }
+    if(S.stuckSince===null){
+      S.stuckSince = Date.now();
+      return;
+    }
+    if(Date.now() - S.stuckSince > 900){
+      resolveStuck();
+      S.stuckSince = null;
+    }
+  }
+
+  function resolveStuck(){
+    let did = false;
+    if(S.youStock.length>0){
+      S.centers[0].push(S.youStock.shift());
+      did = true;
+    }
+    if(S.botStock.length>0){
+      S.centers[1].push(S.botStock.shift());
+      did = true;
+    }
+    if(did){
+      sfxStuck();
+      el.stuckBanner.classList.remove('show'); void el.stuckBanner.offsetWidth; el.stuckBanner.classList.add('show');
+    }
+    if(!did){
+      // true deadlock — decide by fewest remaining cards
+      const youLeft = S.youHand.length + S.youStock.length;
+      const botLeft = S.botHand.length + S.botStock.length;
+      endGame(youLeft <= botLeft ? 'you' : 'bot', true);
+      return;
+    }
+    render();
+  }
+
+  function checkWin(){
+    if(S.youHand.length===0 && S.youStock.length===0){
+      endGame('you', false);
+    } else if(S.botHand.length===0 && S.botStock.length===0){
+      endGame('bot', false);
+    }
+  }
+
+  let loopTimer = null, tickTimer = null;
+  function startLoops(){
+    stopLoops();
+    loopTimer = setInterval(()=>{
+      if(!S.active || S.paused) return;
+      botTryMove();
+      checkStuck();
+    }, 220);
+    tickTimer = setInterval(()=>{
+      if(!S.active || S.paused) return;
+      S.elapsed = (Date.now() - S.startTime)/1000;
+      renderHUD();
+    }, 250);
+  }
+  function stopLoops(){
+    if(loopTimer) clearInterval(loopTimer);
+    if(tickTimer) clearInterval(tickTimer);
+  }
+
+  function endGame(winner, deadlock){
+    S.active = false;
+    stopLoops();
+    if(winner==='you') sfxWin(); else sfxLose();
+    el.resultText.textContent = winner==='you' ? 'SPEED! YOU WIN' : 'BOT WINS';
+    el.resultText.className = 'result ' + (winner==='you' ? 'win':'lose');
+    el.resultSub.textContent = deadlock
+      ? 'Deadlock — decided by fewest cards remaining.'
+      : (winner==='you' ? 'You cleared your hand and stock first.' : 'The bot cleared its hand and stock first.');
+    el.statTime.textContent = fmtTime(S.elapsed);
+    const apm = S.elapsed>2 ? Math.round(S.youMoves / (S.elapsed/60)) : 0;
+    el.statApm.textContent = apm;
+    el.endmodal.style.display = 'flex';
+  }
+
+  function runCountdown(cb){
+    el.countdown.style.display = 'flex';
+    const seq = ['3','2','1','GO'];
+    let i = 0;
+    function step(){
+      el.cdNum.textContent = seq[i];
+      el.cdNum.classList.remove('pulse'); void el.cdNum.offsetWidth; el.cdNum.classList.add('pulse');
+      el.cdNum.className = 'num pulse' + (seq[i]==='GO' ? ' go':'');
+      beep(seq[i]==='GO'?720:420, 0.12, 'square', 0.05);
+      i++;
+      if(i<seq.length){
+        setTimeout(step, 550);
+      } else {
+        setTimeout(()=>{
+          el.countdown.style.display = 'none';
+          cb();
+        }, 500);
+      }
+    }
+    step();
+  }
+
+  function beginRound(){
+    S = newGameState();
+    el.wrapBadge.textContent = settings.wrap ? 'K–A–2 WRAP ON' : 'NO WRAP';
+    el.wrapBadge.classList.toggle('off', !settings.wrap);
+    render();
+    el.setup.style.display = 'none';
+    el.game.style.display = 'flex';
+    el.endmodal.style.display = 'none';
+    runCountdown(()=>{
+      S.active = true;
+      S.startTime = Date.now();
+      startLoops();
+    });
+  }
+
+  // ---- setup screen wiring ----
+  document.getElementById('diffSeg').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    settings.difficulty = btn.dataset.v;
+    [...document.getElementById('diffSeg').children].forEach(b=>b.classList.toggle('active', b===btn));
+  });
+  document.getElementById('wrapToggle').addEventListener('click', ()=>{
+    settings.wrap = !settings.wrap;
+    document.getElementById('wrapSwitch').classList.toggle('on', settings.wrap);
+  });
+  document.getElementById('startBtn').addEventListener('click', beginRound);
+  document.getElementById('playAgainBtn').addEventListener('click', beginRound);
+  document.getElementById('backMenuBtn').addEventListener('click', ()=>{
+    el.endmodal.style.display = 'none';
+    el.game.style.display = 'none';
+    el.setup.style.display = 'block';
+  });
+  document.getElementById('restartBtn').addEventListener('click', beginRound);
+  document.getElementById('menuBtn').addEventListener('click', ()=>{
+    S.active = false;
+    stopLoops();
+    el.game.style.display = 'none';
+    el.setup.style.display = 'block';
+  });
+
+})();
+</script>
+</body>
+</html>
